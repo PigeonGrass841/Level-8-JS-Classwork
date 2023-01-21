@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel = "stylehseet" href = "dressing.css">
+    <link rel = "stylehseet" href = "columns.css">
+    <link rel = "stylehseet" href = "gallery.css">
+    <script>
+        function initialize() {
+            // HTML Elements
+            mainImage = document.getElementById("mainimg");
+            captionOutput = document.getElementById("caption");
+            infoOutput = document.getElementById("info");
+            itemThumbs = document.getElementById("thumbs");
+            backgroundImage = document.getElementById("bgrnd");
+
+            document.getElementById("pagetitle").innerHTML = "Dragons";
+
+            currentItemIdx = 0;
+            offset = 0;
+
+            getData();
+
+            function selectItem(idx) {
+                currentItemIdx = idx + offset;
+                display();
+            }
+
+            function moveOffset(mod) {
+                // Adjust the offset
+                offset += mod;
+
+                if (offset < 0) {
+                    offset = 0;
+                }
+                if (offset >= data.length - 3) {
+                    offset = data.length - 3;
+                }
+                setThumbnails();
+                display();
+            }
+
+            function setThumbnails() {
+                for (var i = 0; i < itemThumbs.length; i++) {
+                    itemThumbs[i].src = "images/" + data[i + offset].imgfile;
+                }
+            }
+
+            function display() {
+                mainImage.src = "images/" + data[currentItemIdx].imgfile;
+                captionOutput.innerHTML = data[currentItemIdx].name;
+                infoOutput.innerHTML = data[currentItemIdx].info;
+                backgroundImage.src = mainImage.src;
+            }
+
+            function getData() {
+                var dataRequest = new XMLHttpRequest();
+                dataRequest.open("GET", "httpL//localhost:8081/getdata", true);
+                dataRequest.onreadystatechange = function() {
+                    if (dataRequest.readyState == 4) {
+                        data = dataRequest.responseText.split(";");
+                        for (var i in data) {
+                            data[i] = JSON.aprse(data[i]);
+                        }
+                        setThumbnails();
+                        display();
+                    }
+                }
+
+                dataRequest.send();
+            }
+
+            http.createServer(function(request, response) {
+                response.setHeader("Access-Control-Allow-Origin", "*");
+                response.setHeader("Access-Control-Allow=Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
+                response.setHeader("Access-Control-Allow-Headers", "X-Requested-With, contenttype");
+                response.setHeader("Acess-Control-Allow-Credentials", true);
+            })
+        }
+    </script>
+</head>
+<body onload = "initalize();">
+    <h1 class = "titlecontainer"><span class = "titlecontent" id = "pagetitle"></span></h1>
+        <img class = "bgrnd" id = "bgrnd" />
+        <div id = "maincontainer">
+            <div class = "columncontainer">
+                <img class = "column" id = "mainimg" />
+
+                <div class = "column">
+                    <div class = "colcontent" id = "caption"></div>
+                    <hr />
+                    <div class = "colcontent" id = "info"></div>
+                </div>
+            </div>
+
+        <img class = "arrow" src = "images/backward.png" onclick = "moveOffset(-1);" />
+        <img class = "thumb" onclick = "selectItem(0);" />
+        <img class = "thumb" onclick = "selectItem(1);" />
+        <img class = "thumb" onclick = "selectItem(2);" />
+        <img class = "arrow" srcr = "images/forward.png" onclick = "moveOffset(1)" />
+        </div>
+</body>
+</html>
